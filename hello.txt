@@ -1,0 +1,130 @@
+Here is a comprehensive Product Requirements Document (PRD) for the "AI-Based Crop Recommendation for Farmers" problem statement for the Smart India Hackathon, structured for clarity and ready for presentation.
+
+---
+
+# Product Requirements Document (PRD)
+## AI-Based Crop Recommendation for Farmers
+**Smart India Hackathon 2025 | Problem Statement ID: 25030**
+
+---
+
+### 1. Executive Summary
+
+**Problem:** Indian farmers, particularly small and marginal ones, often rely on intuition and traditional knowledge for crop selection. This leads to suboptimal yields, financial losses, and inefficient resource use, especially in the face of climate change and market volatility.
+
+**Solution:** "AgriMitra" (or a similar name like FarmEasy) is a mobile-first, AI-powered platform that provides farmers with hyper-local, data-driven crop recommendations. It analyzes real-time weather, soil conditions (even without a soil health card), and market demand to suggest the most suitable and profitable crops, thereby reducing risk and maximizing income.
+
+---
+
+### 2. Problem Statement (As per SIH Portal)
+
+**ID:** 25030
+**Title:** AI-Based Crop Recommendation for Farmers
+**Theme:** Agriculture, FoodTech & Rural Development
+**Category:** Software
+
+**Problem Understanding:**
+Indian agriculture faces significant challenges, including:
+1.  **Data-Driven Decision Gap:** A vast majority of farmers (over 80%) rely on traditional methods for crop selection, often ignoring scientific data and climate forecasts.
+2.  **Climate Vulnerability:** Erratic weather patterns cause significant crop losses.
+3.  **Market Uncertainty:** Farmers lack insights into market demand, leading to surplus of certain crops and low selling prices.
+4.  **Limited Access to Advisory:** Inadequate agricultural extension services leave farmers with no access to personalized guidance.
+5.  **Data Fragmentation:** Critical data on soil health, weather, and market trends is not integrated into a single, accessible tool.
+
+---
+
+### 3. Proposed Solution: AgriMitra
+
+**AgriMitra** is a mobile application designed to bridge the gap between farmers and data-driven farming. It will act as a "digital farming assistant" by integrating key data points to offer simple, actionable crop recommendations.
+
+**How It Addresses the Problem:**
+
+| Problem Addressed | How AgriMitra Solves It |
+| :--- | :--- |
+| **Climate Risk** | Analyzes real-time and forecasted weather data to suggest climate-resilient crops. |
+| **Market Volatility** | Integrates market demand trends to recommend crops with higher potential for profitability. |
+| **Lack of Soil Data** | Functions effectively with or without Soil Health Card data, providing a recommendation even with basic NPK/pH inputs. |
+| **Accessibility** | Features a multi-language interface (voice and text input/output) optimized for low-end devices and offline functionality. |
+| **Digital Literacy** | Empowers farmers with scientific knowledge in their native language, promoting digital literacy in rural areas. |
+
+**Innovation & Uniqueness:**
+1.  **Hybrid AI Model:** Combines soil parameters, weather intelligence, and market data for a holistic recommendation, going beyond simple soil-based suggestions.
+2.  **Offline-First Capability:** Unlike many cloud-reliant apps, AgriMitra will be designed to work in low-connectivity zones via caching and local processing.
+3.  **Multimodal & Multi-lingual:** Supports voice and text input/output in major Indian languages, breaking down the literacy barrier.
+4.  **Free & Scalable:** The core service is free for farmers, removing the entry barrier.
+
+---
+
+### 4. Technical Approach
+
+**System Architecture:**
+
+1.  **User Input/Interface (Frontend):**
+    - **Platform:** Cross-platform mobile app (Flutter/React Native) or Progressive Web App (PWA) to ensure a wide reach on low-end devices.
+    - **Interaction:** Simple form for input (soil type, location, water availability), plus optional GPS auto-detection and voice input for ease of use.
+
+2.  **Data Acquisition Layer:**
+    - **Location Services:** `Geolocator API` for GPS-based location and climate zone detection.
+    - **Weather Data:** `OpenWeatherMap` or similar API for real-time and forecast data.
+    - **Soil Data:** Input from the farmer (NPK, pH, organic matter) or, in the future, integration with government digital Soil Health Card schemes.
+    - **Market Data:** Scraping or API integration from agricultural markets (Mandi rates) to assess demand and pricing trends.
+
+3.  **Processing & Intelligence (Backend):**
+    - **Backend:** Scalable cloud-based server (Node.js/Python with Flask/Django) or serverless architecture for managing API calls and business logic.
+    - **AI Model:** A **hybrid approach** combining:
+        - **Content-based Filtering:** Using a trained Machine Learning model (e.g., RandomForest, LightGBM, XGBoost) on comprehensive agricultural datasets (like Kaggle datasets) to match farm conditions to suitable crops.
+        - **Market-Layer Module:** A secondary rule-based or ML-based engine that adjusts the recommendation based on real-time market demand to maximize profitability.
+    - **Data Storage:** `MongoDB` or `PostgreSQL` for user profiles and historical data. `SQLite` for offline caching on the device.
+
+4.  **Output Generation:**
+    - **Personalized Recommendation:** The app displays the top recommended crops, along with key reasons (e.g., "Best for current weather," "High demand this season").
+    - **Localization:** The output is generated in the farmer's chosen regional language via text-to-speech (TTS) or static translation.
+
+**Methodology (User Flow Diagram):**
+
+```mermaid
+graph TD
+    A[Farmer Opens App] --> B{Location Auto-Detected or Manual Input};
+    B --> C[Weather API Fetches Real-Time & Forecast Data];
+    C --> D[Input Soil Data (NPK, pH) or Uses Default Logic];
+    D --> E[ML Engine Analyzes Weather, Soil & Market Data];
+    E --> F[Generate Personalized Crop Recommendations];
+    F --> G[Display Results in Regional Language (Voice/Text)];
+```
+
+---
+
+### 5. Feasibility & Viability
+
+**Feasibility:**
+- **Technical:** The required technologies (Flutter, Python, OpenWeatherMap) and datasets (Kaggle) are mature and readily available.
+- **Operational:** The app is designed to be lightweight, optimized for 2GB RAM Android phones (like the Samsung J6) and low connectivity, making it feasible for rural India.
+- **Economic:** The solution is free, cloud-based, and scalable, making it economically sustainable to deploy.
+
+**Challenges & Mitigation Strategies:**
+
+| Challenge | Strategy to Overcome |
+| :--- | :--- |
+| **Limited Internet Access** | Implement **Offline-First** support using local `SQLite` caching. Cache weather data and pre-load ML models to run inferences on-device. |
+| **Farmer Digital Literacy** | Provide a simple, intuitive UI with **voice input/output** in local languages. Include in-app tutorials or audio-guided demos. |
+| **Data Accuracy & Availability** | Collaborate with government bodies (e.g., Ministry of Agriculture) and universities to enrich the dataset and ensure predictions are accurate for all agro-climatic zones in India. |
+| **Model Reliance on Third-party APIs** | Build fail-safes and use multiple data sources. For weather, cache data aggressively to reduce API calls and ensure availability even when offline. |
+
+---
+
+### 6. Impact & Benefits
+
+**Social Impact:**
+- **Empowers Small & Marginal Farmers:** Democratizes access to scientific data and advisory services.
+- **Promotes Digital Inclusion:** Breaks language and technology barriers, fostering digital literacy in rural communities.
+
+**Economic Benefits:**
+- **Reduces Crop Failure:** By enabling climate-smart crop selection, it mitigates the risk of crop losses due to unpredictable weather.
+- **Increases Farmer Income:** Providing market-demand insights helps farmers grow high-value crops with a better selling price, leading to income stability and growth.
+
+**Environmental Impact:**
+- **Promotes Sustainable Farming:** Encourages crop choices that align with local climate and soil conditions, leading to efficient resource use (water, fertilizers) and sustainable agricultural practices.
+
+**Scalable Potential:**
+- **Pan-India Deployment:** The architecture is designed to be scalable, capable of supporting millions of farmers across diverse agro-climatic zones.
+- **Integration with Government Schemes:** Can be seamlessly integrated with existing government initiatives like the Soil Health Card scheme and e-NAM (National Agriculture Market).

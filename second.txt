@@ -1,0 +1,433 @@
+# Technical Requirements Document (TRD)
+## AI-Based Crop Recommendation for Farmers
+**Smart India Hackathon 2025 | Problem Statement ID: 25030**
+
+---
+
+### 1. Document Overview
+
+**Purpose:** This Technical Requirements Document (TRD) details the system architecture, technology stack, data models, API specifications, performance benchmarks, and deployment strategy for the "AgriMitra" AI-Based Crop Recommendation platform. It serves as the blueprint for development during the Smart India Hackathon.
+
+**Scope:** Covers the entire system, including the mobile/web frontend, AI/ML backend, data acquisition pipelines, and infrastructure requirements.
+
+**Target Deployment:** Minimum Viable Product (MVP) with scalability to support pan-India rollout.
+
+---
+
+### 2. System Architecture
+
+The system follows a **modular, microservices-oriented architecture** to ensure scalability and maintainability. The high-level architecture comprises four layers:
+
+#### 2.1 Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "Presentation Layer"
+        A[Mobile App<br/>Flutter/React Native]
+        B[Web Dashboard<br/>React/Vue.js]
+    end
+
+    subgraph "API Gateway Layer"
+        C[REST API Gateway<br/>FastAPI/Flask]
+    end
+
+    subgraph "Business Logic Layer"
+        D[Weather Service]
+        E[Market Data Service]
+        F[Recommendation Engine<br/>ML Model Service]
+        G[User Management Service]
+        H[Notification Service]
+    end
+
+    subgraph "Data Layer"
+        I[(PostgreSQL<br/>User Data/History)]
+        J[(Redis<br/>Cache)]
+        K[Object Storage<br/>Model Files/Images]
+    end
+
+    subgraph "External Services"
+        L[OpenWeatherMap API]
+        M[AGMARKNET API]
+        N[Data.gov.in API]
+    end
+
+    A --> C
+    B --> C
+    C --> D
+    C --> E
+    C --> F
+    C --> G
+    C --> H
+    D --> J
+    E --> M
+    E --> N
+    D --> L
+    F --> I
+    F --> K
+    G --> I
+    H --> I
+```
+
+#### 2.2 Architecture Components
+
+| Component | Technology | Responsibility |
+|-----------|------------|----------------|
+| **Frontend** | Flutter / React Native (Mobile)<br/>React + TypeScript + Tailwind CSS (Web) | User interface, multilingual support, voice input/output, offline caching |
+| **Backend** | FastAPI (Python) or Flask (Python) | API endpoints, request handling, business logic orchestration |
+| **ML Service** | Scikit-learn + Pickle/Joblib | Model inference, crop recommendation generation |
+| **Database** | PostgreSQL (Primary)<br/>SQLite (Offline cache) | User data, query history, market data storage |
+| **Cache** | Redis | Weather data caching (1-hour TTL), session management |
+| **Storage** | Supabase Storage / Local FS | Image uploads, model file persistence |
+
+---
+
+### 3. Technology Stack
+
+#### 3.1 Frontend Stack
+
+| Component | Technology | Rationale |
+|-----------|------------|-----------|
+| **Mobile Framework** | Flutter / React Native | Cross-platform, supports low-end devices |
+| **Web Framework** | React 18 + TypeScript + Vite | Type safety, fast build times, modern UI capabilities |
+| **UI Library** | shadcn/ui + Tailwind CSS | Customizable, accessible, lightweight |
+| **State Management** | React Query + Context API | Efficient server state management |
+| **Voice Input** | Web Speech API | Voice recognition for regional languages |
+| **Text-to-Speech** | Indictrans2 / Sarvam M | Regional language voice output |
+| **Internationalization** | i18n framework | Multi-language support (Hindi + 7 regional languages) |
+
+#### 3.2 Backend Stack
+
+| Component | Technology | Rationale |
+|-----------|------------|-----------|
+| **Framework** | FastAPI (async/await) | High performance, automatic OpenAPI docs, async support |
+| **Alternative** | Flask | Simpler setup, good for hackathon prototyping |
+| **ML Libraries** | Scikit-learn, Pandas, NumPy | Model training and inference |
+| **Model Serialization** | Pickle / Joblib | Standard format for scikit-learn model persistence |
+| **HTTP Client** | httpx / aiohttp | Async API calls to external services |
+
+#### 3.3 Infrastructure Stack
+
+| Component | Technology | Rationale |
+|-----------|------------|-----------|
+| **Containerization** | Docker | Consistent dev/prod environments |
+| **Database** | PostgreSQL + pgvector | Relational data, vector support for future enhancements |
+| **Cache** | Redis | Sub-50ms response for cached data |
+| **File Storage** | Supabase Storage / AWS S3 | Scalable image and file storage |
+| **Deployment** | Vercel (Frontend), Railway/Render (Backend) | Simple deployment for hackathon MVP |
+
+---
+
+### 4. Data Specifications
+
+#### 4.1 Input Feature Schema
+
+Model input features, ranges, and units based on the standard Crop Recommendation Dataset:
+
+| Feature | Symbol | Range | Unit | Description |
+|---------|--------|-------|------|-------------|
+| Nitrogen | N | 0 - 100 | kg/ha | Soil nitrogen content |
+| Phosphorus | P | 0 - 100 | kg/ha | Soil phosphorus content |
+| Potassium | K | 0 - 100 | kg/ha | Soil potassium content |
+| Temperature | Temp | -10 - 50 | °C | Ambient temperature |
+| Humidity | Hum | 0 - 100 | % | Relative humidity |
+| pH | pH | 0 - 14 | - | Soil pH level |
+| Rainfall | Rain | 0 - 500 | mm | Annual/Seasonal rainfall |
+
+#### 4.2 Output Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `recommended_crop` | string | Primary crop recommendation |
+| `crop_id` | integer (1-22) | Numeric identifier for crop |
+| `confidence` | float (0-1) | Model confidence score |
+| `top_alternatives` | array | Top 2-3 alternative crops with scores |
+| `reasoning` | string | Human-readable explanation |
+| `timestamp` | datetime | Recommendation generation time |
+
+#### 4.3 Supported Crops (22 Types)
+
+Rice, Maize, Jute, Cotton, Coconut, Papaya, Orange, Apple, Muskmelon, Watermelon, Grapes, Mango, Banana, Pomegranate, Lentil, Blackgram, Mungbean, Mothbeans, Pigeonpeas, Kidneybeans, Chickpea, Coffee
+
+#### 4.4 Database Schema (Core Tables)
+
+**Users Table:**
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    phone VARCHAR(15) UNIQUE,
+    name VARCHAR(100),
+    preferred_language VARCHAR(10),
+    location_lat DECIMAL(10,6),
+    location_lng DECIMAL(10,6),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Query History Table:**
+```sql
+CREATE TABLE queries (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    input_features JSONB, -- {N, P, K, temp, humidity, pH, rainfall}
+    recommended_crop VARCHAR(50),
+    confidence FLOAT,
+    response_time_ms INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Weather Cache Table:**
+```sql
+CREATE TABLE weather_cache (
+    location_key VARCHAR(100) PRIMARY KEY,
+    temperature FLOAT,
+    humidity FLOAT,
+    rainfall FLOAT,
+    forecast_data JSONB,
+    cached_at TIMESTAMP,
+    expires_at TIMESTAMP
+);
+```
+
+---
+
+### 5. API Specifications
+
+#### 5.1 Core Endpoints
+
+| Method | Endpoint | Description | Request Body | Response |
+|--------|----------|-------------|--------------|----------|
+| POST | `/api/v1/recommend` | Get crop recommendation | `{N, P, K, temp, humidity, pH, rainfall, location?}` | `{crop, confidence, alternatives, reasoning}` |
+| GET | `/api/v1/weather` | Get weather data | Query: `{lat, lng, state, district}` | `{current, forecast, irrigation_advice}` |
+| GET | `/api/v1/market` | Get commodity prices | Query: `{commodity, mandi}` | `{price, demand_score, trend}` |
+| GET | `/api/v1/health` | System health check | - | `{status, model_loaded, cache_hit}` |
+
+#### 5.2 POST /api/v1/recommend - Request/Response Example
+
+**Request:**
+```json
+{
+    "N": 50,
+    "P": 30,
+    "K": 40,
+    "temperature": 28.5,
+    "humidity": 65,
+    "pH": 6.5,
+    "rainfall": 200,
+    "location": {
+        "lat": 22.5726,
+        "lng": 88.3639
+    }
+}
+```
+
+**Response:**
+```json
+{
+    "recommended_crop": "Rice",
+    "crop_id": 1,
+    "confidence": 0.94,
+    "top_alternatives": [
+        {"crop": "Maize", "crop_id": 2, "confidence": 0.82},
+        {"crop": "Jute", "crop_id": 3, "confidence": 0.71}
+    ],
+    "reasoning": "High rainfall (200mm) and moderate temperature (28.5°C) are ideal for rice cultivation. Soil pH 6.5 is within optimal range for rice (5.5-7.0).",
+    "timestamp": "2026-07-28T10:30:00Z",
+    "response_time_ms": 145
+}
+```
+
+#### 5.3 Performance Requirements
+
+| Metric | Target | Rationale |
+|--------|--------|-----------|
+| Recommendation API Latency | <200ms | Real-time user experience |
+| Model Inference Time | <50ms | Local/edge deployment capable |
+| Weather API Response | <500ms | Acceptable for external API calls |
+| Concurrent Users (MVP) | 100 req/sec | Scale for hackathon demo |
+| Uptime | 99.9% | Reliability for farmer trust |
+
+---
+
+### 6. ML Model Specifications
+
+#### 6.1 Model Selection
+
+| Model | Accuracy | Rationale |
+|-------|----------|-----------|
+| **Random Forest Classifier** | ~95%+ | Robust to non-linear relationships, handles categorical features well |
+| **XGBoost** | ~95%+ | Higher performance, handles missing data |
+| **K-Nearest Neighbors** | 91.3% | Simpler, good baseline, interpretable |
+
+**Primary Choice:** Random Forest Classifier - optimal balance of accuracy, training speed, and interpretability.
+
+#### 6.2 Training Specifications
+
+| Parameter | Value |
+|-----------|-------|
+| Dataset Size | ~2,200 records, 22 crops |
+| Training/Test Split | 80/20 stratified |
+| Cross-validation | 5-fold |
+| Feature Scaling | StandardScaler + MinMaxScaler |
+| Primary Metric | Accuracy, F1-Score |
+
+#### 6.3 Model File Specifications
+
+| Format | File Extension | Size (Est.) |
+|--------|----------------|-------------|
+| Pickle (Scikit-learn) | `.pkl` | ~5-10 MB |
+| Joblib | `.joblib` | ~5-10 MB |
+
+#### 6.4 Scaler Dependencies
+
+```
+# Required scalers for input preprocessing
+crop_predict_standscaler.pkl  # StandardScaler
+crop_predict_minmaxscaler.pkl # MinMaxScaler
+crop_predict_model.pkl        # Trained classifier
+```
+
+#### 6.5 Sample Inference Code
+
+```python
+from huggingface_hub import hf_hub_download
+import joblib
+import numpy as np
+
+# Load model and scalers
+repo = "Arko007/agromind-crop-recommendation"
+model = joblib.load(hf_hub_download(repo, "crop_predict_model.pkl"))
+sc = joblib.load(hf_hub_download(repo, "crop_predict_standscaler.pkl"))
+ms = joblib.load(hf_hub_download(repo, "crop_predict_minmaxscaler.pkl"))
+
+# Input features
+features = np.array([[50, 30, 40, 28, 65, 6.5, 200]])
+
+# Preprocess and predict
+features_scaled = sc.transform(ms.transform(features))
+prediction = model.predict(features_scaled)
+# Output: crop_id (1-22)
+```
+
+---
+
+### 7. External API Integrations
+
+| Service | Purpose | API Type | Rate Limit | Fallback |
+|---------|---------|----------|------------|----------|
+| **OpenWeatherMap** | Real-time & forecast weather | REST | 60 req/min | Data.gov.in |
+| **AGMARKNET** | Live mandi prices | REST | 30 req/min | Cached data |
+| **Data.gov.in** | IMD weather data | REST | 50 req/min | OpenWeatherMap |
+| **Hugging Face Inference** | AI assistant queries | REST | Varies by model | Deterministic fallback |
+
+---
+
+### 8. Offline-First Design
+
+#### 8.1 Offline Capability Requirements
+
+| Feature | Implementation | Storage |
+|---------|----------------|---------|
+| Weather Data | Cache last 7-day forecast | SQLite |
+| Model Inference | Pre-loaded model on device | Local .pkl file |
+| User Queries | Queue for sync when online | SQLite |
+| Language Models | Pre-downloaded TTS models | Local storage |
+
+#### 8.2 Sync Strategy
+
+- **Immediate:** Queries stored locally, synced on reconnection
+- **TTL-based:** Weather cache expires after 1 hour
+- **Conflict Resolution:** Timestamp-based (latest wins)
+
+---
+
+### 9. Security & Compliance
+
+| Requirement | Implementation |
+|-------------|----------------|
+| **Authentication** | Phone number OTP (SMS verification) |
+| **Data Encryption** | TLS 1.2+ for all API calls |
+| **Sensitive Data** | PII encryption at rest (AES-256) |
+| **API Rate Limiting** | 100 req/min per IP |
+| **Input Validation** | Joi schema validation, range checks |
+
+---
+
+### 10. Development & Deployment Plan
+
+#### 10.1 Development Phases (Hackathon Timeline)
+
+| Phase | Duration | Deliverables |
+|-------|----------|--------------|
+| **Phase 1: Setup** | Day 1 | Environment setup, model training baseline |
+| **Phase 2: Backend** | Days 2-3 | API endpoints, database schema, integration |
+| **Phase 3: Frontend** | Days 3-4 | UI implementation, voice/multilingual support |
+| **Phase 4: Integration** | Day 5 | Full system integration, testing |
+| **Phase 5: Polish** | Day 6 | Demo preparation, documentation |
+
+#### 10.2 Deployment Configuration
+
+**Backend Environment Variables:[citation]**
+```
+HF_API_KEY=                    # Hugging Face API key (optional)
+SUPABASE_URL=                  # Supabase project URL
+SUPABASE_SERVICE_KEY=          # Supabase service role key
+OPENWEATHER_API_KEY=           # OpenWeatherMap API key
+AGMARKNET_API_KEY=             # AGMARKNET API key
+REDIS_URL=redis://localhost:6379
+DEBUG=false
+```
+
+**Frontend Environment Variables:**
+```
+VITE_API_URL=http://localhost:8000
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+```
+
+---
+
+### 11. Testing Requirements
+
+#### 11.1 Test Scenarios
+
+| Test Type | Scenario | Expected Result |
+|-----------|----------|-----------------|
+| **Unit** | Model inference | <200ms response, >90% accuracy |
+| **Unit** | Weather API integration | Valid JSON with 7-day forecast |
+| **Integration** | End-to-end recommendation | Complete flow from input to output |
+| **Performance** | 100 concurrent requests | <500ms avg response |
+| **Offline** | Submit without internet | Query queued, sync on reconnect |
+| **Voice** | Voice input in Hindi | Correct transcription and response |
+
+#### 11.2 Accuracy Benchmarks
+
+- Minimum acceptable accuracy: **91%** on test data
+- Target accuracy: **94-96%** (Random Forest/XGBoost)
+- Top-3 recommendation accuracy: **98%+**
+
+---
+
+### 12. Success Criteria
+
+| Metric | Target |
+|--------|--------|
+| Recommendation Accuracy | ≥91% on test dataset |
+| API Response Time | <200ms (p95) |
+| Offline Functionality | 100% of core features |
+| Language Support | ≥8 Indian languages |
+| Model Inference | <50ms on mobile device |
+
+---
+
+### 13. References
+
+1. Smart India Hackathon 2025 Portal - Problem Statement 25030
+2. Crop Recommendation Dataset - Kaggle (2,200 records, 22 crops)
+3. Scikit-learn Documentation - RandomForestClassifier
+4. FastAPI Documentation - Async REST APIs
+5. Hugging Face Model Hub - AgroMind Model
+
+---
+
+*Document Version: 1.0 | Last Updated: 2026-07-28*

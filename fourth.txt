@@ -1,0 +1,428 @@
+# App Flow Diagram: AgriMitra
+## AI-Based Crop Recommendation for Farmers
+**Smart India Hackathon 2025 | Problem Statement ID: 25030**
+
+---
+
+### 1. Complete User Journey Flowchart
+
+This flowchart maps the entire user journey from app launch to receiving recommendations and utilizing post-recommendation features.
+
+```mermaid
+graph TD
+    A[App Launch] --> B{First Time User?}
+    B -->|Yes| C[Welcome/Language Selection Screen]
+    B -->|No| D[Splash Screen → Home Dashboard]
+    
+    C --> E[Phone Number Registration]
+    E --> F[OTP Verification]
+    F --> G{Authentication Success?}
+    G -->|No| E
+    G -->|Yes| D
+    
+    D --> H{User Action}
+    
+    %% Core Recommendation Flow
+    H -->|Tap 'Get Recommendation'| I[Input Method Selection]
+    I --> J{Voice Input Available?}
+    J -->|Yes| K[Voice Input Screen<br/>'Speak Now' with Mic]
+    J -->|No| L[Manual Input Form<br/>Soil/Weather/Location]
+    
+    K --> M[Speech-to-Text Processing]
+    M --> N[AI Extracts Parameters<br/>N,P,K,temp,humidity,pH,rainfall]
+    N --> O{Parameters Complete?}
+    O -->|No| P[AI Asks Clarifying Questions<br/>Voice/Text]
+    P --> K
+    
+    L --> Q[User Fills Form Fields]
+    Q --> O
+    
+    O -->|Yes| R[Show Loading/Processing<br/>'Analyzing Your Field...']
+    R --> S[Backend API Call<br/>POST /api/v1/recommend]
+    S --> T[Display Recommendation Results]
+    
+    %% Recommendation Results
+    T --> U[Audio TTS Announcement<br/>'Best crop for you is...']
+    T --> V[Visual Display<br/>Primary Crop + Confidence]
+    T --> W[Show Top Alternatives<br/>2-3 crops with scores]
+    T --> X[Show Reasoning<br/>'Why this crop?']
+    
+    %% Post-Recommendation Actions
+    V --> Y{User Action}
+    Y -->|'Detailed View'| Z[Crop Details Screen<br/>Sowing/ Harvesting/ Pest info]
+    Y -->|'Save'| AA[Save to Favorites/History]
+    Y -->|'Market Prices'| AB[Fetch Live Mandi Rates<br/>for recommended crop]
+    Y -->|'Share'| AC[Share via WhatsApp/SMS]
+    Y -->|'Ask Follow-up'| AD[Conversational AI Chat]
+    Y -->|'Back'| D
+    
+    %% Market Price Flow
+    AB --> AE[Display Market Prices<br/>Nearby Mandis with Trends]
+    AE --> AF[Price Alert Setup]
+    AF --> AG[Notify when price changes]
+    
+    %% Conversational AI Flow
+    AD --> AH[Chat Interface]
+    AH --> AI[User Types/Speaks Query]
+    AI --> AJ[AI Processes & Responds]
+    AJ --> AK{More Questions?}
+    AK -->|Yes| AH
+    AK -->|No| D
+    
+    %% Weather Flow from Dashboard
+    H -->|Tap Weather Widget| AL[Weather Details Screen]
+    AL --> AM[Current Conditions + 7-Day Forecast]
+    AM --> AN[Irrigation Advisory<br/>Based on rainfall forecast]
+    
+    %% Soil Health Flow from Dashboard
+    H -->|Tap Soil Health| AO[Soil Health Dashboard]
+    AO --> AP{Has Soil Health Card?}
+    AP -->|Yes| AQ[Upload/Enter Card Data]
+    AP -->|No| AR[Enter Basic Soil Parameters<br/>Manually]
+    AQ --> AS[View Soil Analysis]
+    AR --> AS
+    
+    %% Educational Content Flow
+    H -->|Tap 'Learn'| AT[Learning Center]
+    AT --> AU[Browse Topics<br/>Crops/Weather/Pest Management]
+    AU --> AV[Select Topic]
+    AV --> AW[Audio-Visual Content<br/>with Voice Narration]
+    AW --> AX[Take Quiz on Topic]
+    AX --> AY[View Score & Feedback]
+    
+    %% Notification Flow
+    H -->|Tap Notification| AZ[Notification Center]
+    AZ --> BA[View Alerts<br/>Weather/Market/Advisory]
+    BA --> BB[Tap Alert for Details]
+    BB --> BC[Navigate to Relevant Screen]
+```
+
+---
+
+### 2. Detailed Screen-by-Screen Flow
+
+#### 2.1 Onboarding & Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant Backend
+    participant SMSGateway
+    
+    User->>App: Opens App
+    App->>User: Show Splash Screen (2s)
+    App->>User: Language Selection Prompt
+    
+    User->>App: Selects Language (Hindi/Marathi/etc.)
+    App->>User: Voice Welcome + Registration Screen
+    
+    User->>App: Enters Phone Number
+    User->>App: Taps 'Get OTP'
+    App->>Backend: POST /api/v1/auth/send-otp
+    Backend->>SMSGateway: Send OTP SMS
+    SMSGateway-->>User: OTP Received
+    
+    User->>App: Enters OTP
+    App->>Backend: POST /api/v1/auth/verify-otp
+    Backend-->>App: Auth Token + User Profile
+    App->>User: Navigate to Home Dashboard
+```
+
+#### 2.2 Core Recommendation Flow (Detailed)
+
+```mermaid
+flowchart TD
+    subgraph Input["Input Phase"]
+        A[Dashboard<br/>Tap 'Get Recommendation'] --> B[Voice/Manual Input Screen]
+        B --> C{Voice Input?}
+        C -->|Yes| D[🎙️ Mic Active<br/>User Speaks]
+        D --> E[STT Processing<br/>Converts to Text]
+        E --> F[AI Extracts:<br/>- Soil Type/Color<br/>- Weather Conditions<br/>- Location<br/>- Water Source]
+        F --> G{All params<br/>extracted?}
+        G -->|No| H[AI Asks:<br/>'What is your soil pH?']
+        H --> D
+        G -->|Yes| I[Proceed to Processing]
+        C -->|No| J[Manual Form]
+        J --> K[Sliders/Dropdowns for:<br/>N, P, K, pH, Temp, Humidity, Rainfall]
+        K --> I
+    end
+    
+    subgraph Processing["Processing Phase"]
+        I --> L[Show Loading Spinner<br/>'Analyzing Field Data...']
+        L --> M[Backend API Call<br/>POST /api/v1/recommend]
+        M --> N[ML Model Inference<br/>Random Forest/XGBoost]
+        N --> O[Response Ready]
+    end
+    
+    subgraph Output["Output Phase"]
+        O --> P[Show Results Screen]
+        P --> Q[🎵 TTS Announcement<br/>'Based on your field,<br/>Rice is recommended']
+        P --> R[Primary Recommendation<br/>Crop Name + Confidence %]
+        P --> S[Top Alternatives<br/>2-3 with scores]
+        P --> T[Reasoning Section<br/>'Why this crop?']
+        T --> U[Bullet Points:<br/>• Fits your soil pH<br/>• Ideal for current weather<br/>• High market demand]
+    end
+```
+
+#### 2.3 Post-Recommendation Actions Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Results: Recommendation Generated
+    
+    state Results {
+        Primary: View Primary Crop
+        Alts: View Alternatives
+        Reason: View Reasoning
+    }
+    
+    Results --> Details: Tap 'Learn More'
+    Details --> Sowing: Sowing Time
+    Details --> Harvesting: Harvesting Tips
+    Details --> Pests: Pest Management
+    
+    Results --> Market: Tap 'Check Prices'
+    Market --> Mandi1: Pune Mandi
+    Market --> Mandi2: Satara Mandi
+    Market --> Alert: Set Price Alert
+    
+    Results --> Chat: Tap 'Ask More'
+    Chat --> Q1: User: "When to sow?"
+    Chat --> Q2: User: "Fertilizer needed?"
+    Chat --> Q3: User: "Expected yield?"
+    
+    Results --> Save: Tap 'Save'
+    Save --> History: Saved to History
+    
+    Results --> Share: Tap 'Share'
+    Share --> WhatsApp: Share via WhatsApp
+    Share --> SMS: Share via SMS
+    
+    Results --> [*]: Tap 'Back to Home'
+```
+
+---
+
+### 3. State Management & Transitions
+
+| Screen | Entry Point | Exit Point(s) | Key UI Elements |
+|--------|-------------|---------------|-----------------|
+| **Splash Screen** | App Launch | Auto-transition after 2s | Logo, App Name |
+| **Language Selection** | After Splash | Tap Language → Registration | Language cards (flags/text), "Continue" button |
+| **Registration** | Language Selection | Submit → OTP Screen | Phone input field, "Get OTP" button |
+| **OTP Verification** | Registration | Verify → Home | 6-digit OTP input, "Verify" button, Resend OTP |
+| **Home Dashboard** | OTP Verification OR App Launch (returning) | Navigation to sub-screens | Recommendation CTA, Weather Widget, Quick Links |
+| **Input Screen** | Home → "Get Recommendation" | Submit → Processing | Mic button, Form fields, "Get Suggestion" button |
+| **Processing** | Input Submit | Auto → Results | Loading spinner, progress text (with audio) |
+| **Results** | Processing Complete | Various (Market/Details/Chat/Back) | Crop card, Confidence, Alternatives, Action buttons |
+| **Crop Details** | Results → "Learn More" | Back → Results | Sowing/ Harvesting/ Pest information with images |
+| **Market Prices** | Results → "Check Prices" | Back → Results | Mandi list, Price trends, Alert button |
+| **AI Chat** | Results → "Ask More" | Back → Results | Chat bubble interface, Voice input |
+| **Learning Center** | Home → "Learn" | Back → Home | Topic cards, Progress bars |
+| **Notifications** | Home → Notification Bell | Back → Home | Alert list with categories |
+| **Soil Health** | Home → "Soil Health" | Back → Home | Input form, Analysis results |
+
+---
+
+### 4. Voice Interaction Flow (Multimodal)
+
+The voice interface is a critical differentiator for low-literacy users. The voice flow is designed to be conversational and natural.
+
+```mermaid
+graph LR
+    subgraph VoiceInput["Voice Input Flow"]
+        V1[User: "Hello AgriMitra"] --> V2[App: "Hello! How can I help you today?"]
+        V2 --> V3[User: "Recommend a crop for my field"]
+        V3 --> V4[App: "Sure! Tell me about your soil and weather"]
+        V4 --> V5[User: "I have black soil, it has rained 200mm this month, and I'm in Satara"]
+        V5 --> V6[App: "Got it! What is your soil pH?"]
+        V6 --> V7[User: "It's around 6.5"]
+        V7 --> V8[App: "Analyzing... Based on this, Rice is the best crop for you"]
+    end
+    
+    subgraph VoiceOutput["Voice Output Flow"]
+        V8 --> O1[App: "🎵 Rice is the best crop for you this season"]
+        O1 --> O2[App: "It has a confidence score of 94%"]
+        O2 --> O3[App: "Would you like to know more about growing Rice?"]
+        O3 --> O4{User Response}
+        O4 -->|Yes| O5[App: "Provides detailed info via voice"]
+        O4 -->|No| O6[App: "Returning to Home. Let me know if you need help!"]
+    end
+```
+
+#### Voice Input Extraction Rules
+
+| Extracted Parameter | Example User Phrase | Extraction Method |
+|---------------------|---------------------|-------------------|
+| **Location** | "I am in Satara" | Named Entity Recognition |
+| **Soil Type** | "Black soil" / "Sandy soil" | Keyword matching + fuzzy search |
+| **Rainfall** | "200mm rain this month" | Regex + numerical extraction |
+| **Temperature** | "It's quite hot, about 30 degrees" | Keyword + numerical extraction |
+| **pH** | "pH is around 6.5" | Keyword + numerical extraction |
+| **Water Source** | "I have a borewell" / "Rainfed" | Keyword matching |
+
+---
+
+### 5. Error & Exception Handling Flow
+
+```mermaid
+graph TD
+    A[User Action] --> B{Action Successful?}
+    B -->|Yes| C[Continue Normal Flow]
+    B -->|No| D[Error State]
+    
+    D --> E{Error Type}
+    
+    E -->|Network Error| F[Show: 'No Internet Connection']
+    F --> G[Retry Button]
+    G --> H{Retry}
+    H -->|Success| C
+    H -->|Fail| F
+    
+    E -->|Voice Recognition Error| I[Show: 'I didn't catch that']
+    I --> J[Retry Voice Input]
+    I --> K[Fallback to Manual Input]
+    
+    E -->|API Timeout| L[Show: 'Taking longer than expected']
+    L --> M[Retry]
+    L --> N[Use Cached Recommendation]
+    
+    E -->|Invalid Input| O[Show: 'Please enter valid value']
+    O --> P[Highlight Field with Error]
+    P --> Q[User Corrects Input]
+    Q --> C
+    
+    E -->|Model Confidence Low| R[Show: 'The data is uncertain']
+    R --> S[Display Alternative Options]
+    S --> T[Suggest Soil Testing]
+```
+
+#### Error Messages (Multilingual)
+
+| Error Scenario | Hindi Message | Marathi Message | English Message |
+|----------------|---------------|-----------------|-----------------|
+| Network Error | "इंटरनेट कनेक्शन नहीं मिला" | "इंटरनेट कनेक्शन सापडले नाही" | "No internet connection found" |
+| Voice Input Fail | "आपकी बात समझ नहीं आई, कृपया फिर से बोलें" | "तुमचे बोलणे समजले नाही, कृपया पुन्हा बोला" | "Couldn't understand, please speak again" |
+| Invalid Soil pH | "pH मान 0 से 14 के बीच होना चाहिए" | "pH मूल्य 0 ते 14 दरम्यान असावे" | "pH must be between 0 and 14" |
+
+---
+
+### 6. State Transitions & Navigation Matrix
+
+| Current Screen | User Action | Destination Screen | Transition Animation |
+|----------------|-------------|-------------------|---------------------|
+| Splash | Timer ends | Language Selection | Fade |
+| Language Selection | Select Language + Tap Continue | Registration | Slide Up |
+| Registration | Tap 'Get OTP' | OTP Verification | Slide Up |
+| OTP Verification | Verify Success | Home Dashboard | Fade + Scale |
+| Home Dashboard | Tap 'Get Recommendation' | Input Screen | Slide Up |
+| Input Screen | Tap 'Get Suggestion' | Processing Screen | Cross-fade with Spinner |
+| Processing Screen | API Response | Results Screen | Fade with Pop |
+| Results Screen | Tap 'Learn More' | Crop Details | Slide Right |
+| Results Screen | Tap 'Check Prices' | Market Prices | Slide Right |
+| Results Screen | Tap 'Ask More' | AI Chat | Slide Up (Bottom Sheet) |
+| Results Screen | Tap 'Save' | Confirmation Toast + Stay | Toast Notification |
+| Results Screen | Tap 'Share' | Share Sheet (System) | Bottom Sheet |
+| Home Dashboard | Tap Weather Widget | Weather Details | Slide Up |
+| Home Dashboard | Tap 'Learn' | Learning Center | Slide Right |
+| Any Screen | Back Button (Hardware/Software) | Previous Screen | Slide Left/Reverse |
+
+---
+
+### 7. User State Persistence
+
+```mermaid
+stateDiagram-v2
+    [*] --> NewUser: App Launch
+    
+    state NewUser {
+        [*] --> LanguageSelection
+        LanguageSelection --> Registration
+        Registration --> OTPVerification
+        OTPVerification --> Home: Success
+    }
+    
+    state ReturningUser {
+        [*] --> Splash
+        Splash --> Home: Auto-login
+    }
+    
+    state LoggedIn {
+        Home --> Input
+        Home --> Weather
+        Home --> Learning
+        Home --> SoilHealth
+        Input --> Processing
+        Processing --> Results
+        Results --> Market
+        Results --> Chat
+        Results --> Details
+    }
+    
+    NewUser --> ReturningUser: After Registration
+    ReturningUser --> LoggedIn: Session Active
+    LoggedIn --> ReturningUser: App Minimized
+    ReturningUser --> [*]: Logout
+```
+
+---
+
+### 8. Offline Mode State Flow
+
+```mermaid
+graph TD
+    A[App Online] --> B[Network Check]
+    B --> C{Internet Available?}
+    C -->|Yes| D[Sync Data with Cloud]
+    C -->|No| E[Switch to Offline Mode]
+    
+    D --> F[Update Local Cache]
+    F --> G[Clear Pending Sync Queue]
+    
+    E --> H[Show Offline Banner]
+    H --> I[Load Cached Weather]
+    H --> J[Load Cached Recommendations]
+    H --> K[Queue New Queries Locally]
+    
+    I --> L[User Interacts Offline]
+    J --> L
+    K --> L
+    
+    L --> M[Store Actions in SQLite]
+    M --> N[Network Check Every 60s]
+    N --> O{Reconnected?}
+    O -->|Yes| P[Sync Queued Queries]
+    O -->|No| H
+    
+    P --> Q[Upload to Backend]
+    Q --> R[Clear Queue]
+    R --> D
+```
+
+---
+
+### 9. Key Metrics for Flow Optimization
+
+| Metric | Target | Measurement Point |
+|--------|--------|-------------------|
+| **Funnel Completion Rate** | >80% | From Input → Results |
+| **Voice Input Success** | >70% | Successful STT extraction |
+| **Time to Recommendation** | <120s | From Input to Results |
+| **Offline Query Queue** | 100% | All offline queries synced |
+| **User Retention (D1)** | >40% | Return after 24 hours |
+
+---
+
+### 10. Tools for Flow Prototyping
+
+| Tool | Purpose |
+|------|---------|
+| **Figma** | Interactive prototype with clickable screens and transitions |
+| **Miro** | Collaborative flow diagram creation |
+| **Whimsical** | Quick flowcharts and user journey mapping |
+| **ProtoPie** | High-fidelity interactive prototypes with voice integration |
+
+---
+
+*Document Version: 1.0 | Last Updated: 2026-07-28*

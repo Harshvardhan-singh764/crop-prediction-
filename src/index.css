@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: radial-gradient(circle at 50% 0%, #1e3314 0%, #12210b 45%, #0a1406 100%);
+    background-attachment: fixed;
+    color: #f7fee7;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Natural Greenish-Yellow Organic Glass & Cards */
+.vercel-card {
+  background: rgba(14, 26, 11, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(163, 230, 53, 0.2);
+  border-radius: 14px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.vercel-card:hover {
+  border-color: rgba(163, 230, 53, 0.45);
+  box-shadow: 0 0 35px -5px rgba(163, 230, 53, 0.15);
+}
+
+.vercel-input {
+  background: #0b1408;
+  border: 1px solid rgba(163, 230, 53, 0.25);
+  color: #f7fee7;
+  border-radius: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vercel-input:focus {
+  border-color: #a3e635;
+  box-shadow: 0 0 0 2px rgba(163, 230, 53, 0.25);
+  outline: none;
+}
+
+.vercel-button-primary {
+  background: linear-gradient(135deg, #a3e635 0%, #84cc16 100%);
+  color: #0b1408;
+  font-weight: 700;
+  border-radius: 100px;
+  box-shadow: 0 0 20px -3px rgba(163, 230, 53, 0.4);
+  transition: all 0.15s ease;
+}
+
+.vercel-button-primary:hover {
+  background: linear-gradient(135deg, #bef264 0%, #a3e635 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 0 25px 0px rgba(163, 230, 53, 0.6);
+}
+
+.vercel-button-secondary {
+  background-color: #0b1408;
+  color: #ecfccb;
+  border: 1px solid rgba(163, 230, 53, 0.25);
+  font-weight: 600;
+  border-radius: 100px;
+  transition: all 0.15s ease;
+}
+
+.vercel-button-secondary:hover {
+  background-color: #12210b;
+  border-color: rgba(163, 230, 53, 0.5);
+}
+
+/* Text Gradient Utilities - Natural Greenish Yellow Harvest */
+.text-gradient-develop {
+  background: linear-gradient(90deg, #a3e635 0%, #facc15 50%, #4ade80 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-preview {
+  background: linear-gradient(90deg, #facc15 0%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-ship {
+  background: linear-gradient(90deg, #4ade80 0%, #a3e635 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom voice pulse animation */
+@keyframes vercel-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.voice-active-vercel {
+  animation: vercel-pulse 1.4s infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a1406;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e3314;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a3e635;
+}
