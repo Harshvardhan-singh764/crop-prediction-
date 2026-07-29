@@ -4,7 +4,10 @@
 
 @layer base {
   body {
-    background: radial-gradient(circle at 50% 0%, #1e3314 0%, #12210b 45%, #0a1406 100%);
+    background: linear-gradient(180deg, rgba(8, 16, 5, 0.82) 0%, rgba(6, 14, 4, 0.90) 100%),
+                url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
     background-attachment: fixed;
     color: #f7fee7;
     min-height: 100vh;
@@ -12,24 +15,24 @@
   }
 }
 
-/* Natural Greenish-Yellow Organic Glass & Cards */
+/* Semi-Transparent Glass Cards with Farmer Background Showing Through */
 .vercel-card {
-  background: rgba(14, 26, 11, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(163, 230, 53, 0.2);
+  background: rgba(10, 20, 8, 0.68);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(163, 230, 53, 0.22);
   border-radius: 14px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6);
 }
 
 .vercel-card:hover {
-  border-color: rgba(163, 230, 53, 0.45);
-  box-shadow: 0 0 35px -5px rgba(163, 230, 53, 0.15);
+  border-color: rgba(163, 230, 53, 0.5);
+  box-shadow: 0 0 35px -5px rgba(163, 230, 53, 0.2);
 }
 
 .vercel-input {
-  background: #0b1408;
+  background: rgba(8, 16, 6, 0.80);
   border: 1px solid rgba(163, 230, 53, 0.25);
   color: #f7fee7;
   border-radius: 10px;
@@ -58,7 +61,7 @@
 }
 
 .vercel-button-secondary {
-  background-color: #0b1408;
+  background-color: rgba(8, 16, 6, 0.85);
   color: #ecfccb;
   border: 1px solid rgba(163, 230, 53, 0.25);
   font-weight: 600;
@@ -67,8 +70,36 @@
 }
 
 .vercel-button-secondary:hover {
-  background-color: #12210b;
+  background-color: rgba(18, 33, 11, 0.90);
   border-color: rgba(163, 230, 53, 0.5);
+}
+
+/* Sky-Blue Weather Section with Reddish-Orange Cursor Hover Transition */
+.weather-card {
+  background: rgba(12, 35, 54, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 16px;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 36px -10px rgba(2, 132, 199, 0.35);
+}
+
+.weather-card:hover {
+  background: rgba(46, 16, 10, 0.82);
+  border-color: rgba(249, 115, 22, 0.65);
+  box-shadow: 0 0 45px 5px rgba(249, 115, 22, 0.40);
+}
+
+.weather-subcard {
+  background: rgba(6, 22, 38, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  transition: all 0.35s ease;
+}
+
+.weather-card:hover .weather-subcard {
+  background: rgba(28, 10, 6, 0.90);
+  border-color: rgba(249, 115, 22, 0.40);
 }
 
 /* Text Gradient Utilities - Natural Greenish Yellow Harvest */
@@ -105,6 +136,35 @@
 
 .voice-active-vercel {
   animation: vercel-pulse 1.4s infinite;
+}
+
+/* Animated Raindrops Background */
+@keyframes raindrop-fall {
+  0% {
+    transform: translateY(-80px);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(750px);
+    opacity: 0;
+  }
+}
+
+.raindrop {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 48px;
+  background: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.9), rgba(249, 115, 22, 0.7));
+  border-radius: 9999px;
+  pointer-events: none;
+  animation: raindrop-fall linear infinite;
 }
 
 /* Custom Scrollbar */
