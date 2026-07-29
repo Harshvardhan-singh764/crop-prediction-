@@ -4,10 +4,7 @@
 
 @layer base {
   body {
-    background: linear-gradient(180deg, rgba(8, 16, 5, 0.82) 0%, rgba(6, 14, 4, 0.90) 100%),
-                url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1920&q=80');
-    background-size: cover;
-    background-position: center;
+    background: radial-gradient(ellipse at 20% 0%, rgba(16, 40, 12, 0.95) 0%, rgba(8, 22, 36, 0.45) 50%, rgba(10, 20, 6, 0.98) 100%);
     background-attachment: fixed;
     color: #f7fee7;
     min-height: 100vh;
@@ -15,49 +12,49 @@
   }
 }
 
-/* Semi-Transparent Glass Cards with Farmer Background Showing Through */
+/* Professional Yellowish-Green & Sky-Blue Glass Cards */
 .vercel-card {
-  background: rgba(10, 20, 8, 0.68);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(10, 20, 8, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(163, 230, 53, 0.22);
-  border-radius: 14px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.55);
 }
 
 .vercel-card:hover {
-  border-color: rgba(163, 230, 53, 0.5);
-  box-shadow: 0 0 35px -5px rgba(163, 230, 53, 0.2);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 40px -5px rgba(56, 189, 248, 0.15), 0 0 20px -5px rgba(163, 230, 53, 0.15);
 }
 
 .vercel-input {
-  background: rgba(8, 16, 6, 0.80);
+  background: rgba(8, 16, 6, 0.82);
   border: 1px solid rgba(163, 230, 53, 0.25);
   color: #f7fee7;
   border-radius: 10px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .vercel-input:focus {
-  border-color: #a3e635;
-  box-shadow: 0 0 0 2px rgba(163, 230, 53, 0.25);
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
   outline: none;
 }
 
 .vercel-button-primary {
-  background: linear-gradient(135deg, #a3e635 0%, #84cc16 100%);
+  background: linear-gradient(135deg, #a3e635 0%, #84cc16 50%, #38bdf8 100%);
   color: #0b1408;
   font-weight: 700;
   border-radius: 100px;
-  box-shadow: 0 0 20px -3px rgba(163, 230, 53, 0.4);
-  transition: all 0.15s ease;
+  box-shadow: 0 0 22px -3px rgba(163, 230, 53, 0.4);
+  transition: all 0.2s ease;
 }
 
 .vercel-button-primary:hover {
-  background: linear-gradient(135deg, #bef264 0%, #a3e635 100%);
+  background: linear-gradient(135deg, #bef264 0%, #a3e635 50%, #7dd3fc 100%);
   transform: translateY(-1px);
-  box-shadow: 0 0 25px 0px rgba(163, 230, 53, 0.6);
+  box-shadow: 0 0 30px 0px rgba(56, 189, 248, 0.45), 0 0 20px 0px rgba(163, 230, 53, 0.35);
 }
 
 .vercel-button-secondary {
@@ -66,12 +63,12 @@
   border: 1px solid rgba(163, 230, 53, 0.25);
   font-weight: 600;
   border-radius: 100px;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .vercel-button-secondary:hover {
-  background-color: rgba(18, 33, 11, 0.90);
-  border-color: rgba(163, 230, 53, 0.5);
+  background-color: rgba(12, 26, 42, 0.90);
+  border-color: rgba(56, 189, 248, 0.5);
 }
 
 /* Sky-Blue Weather Section with Reddish-Orange Cursor Hover Transition */
@@ -102,9 +99,9 @@
   border-color: rgba(249, 115, 22, 0.40);
 }
 
-/* Text Gradient Utilities - Natural Greenish Yellow Harvest */
+/* Text Gradient Utilities - Yellowish Green & Sky Blue */
 .text-gradient-develop {
-  background: linear-gradient(90deg, #a3e635 0%, #facc15 50%, #4ade80 100%);
+  background: linear-gradient(90deg, #a3e635 0%, #38bdf8 50%, #4ade80 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -116,7 +113,7 @@
 }
 
 .text-gradient-ship {
-  background: linear-gradient(90deg, #4ade80 0%, #a3e635 100%);
+  background: linear-gradient(90deg, #38bdf8 0%, #a3e635 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -161,10 +158,38 @@
   top: 0;
   width: 2px;
   height: 48px;
-  background: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.9), rgba(249, 115, 22, 0.7));
+  background: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.9), rgba(163, 230, 53, 0.6));
   border-radius: 9999px;
   pointer-events: none;
   animation: raindrop-fall linear infinite;
+}
+
+/* Continuously Scrolling Farm Marquee */
+@keyframes farm-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.farm-marquee {
+  animation: farm-scroll 35s linear infinite;
+}
+
+.farm-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Fade-in animation utility */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* Custom Scrollbar */
@@ -183,5 +208,14 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a3e635;
+  background: #38bdf8;
+}
+
+@keyframes cursorBubble {
+  0% { transform: scale(0.5) translateY(0); opacity: 0.8; }
+  100% { transform: scale(2.5) translateY(-40px); opacity: 0; }
+}
+
+.animate-cursor-bubble {
+  animation: cursorBubble 1s ease-out forwards;
 }

@@ -1,25 +1,38 @@
-import React, { useMemo } from 'react';
-import { Sun, CloudRain, Cloud, Droplets, Wind, AlertCircle, Calendar } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Sun, CloudRain, Cloud, Droplets, Wind, AlertCircle, Calendar, MapPin } from 'lucide-react';
 import { WeatherInfo } from '../types';
 
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+];
+
 export const WeatherWidget: React.FC = () => {
+  const [selectedState, setSelectedState] = useState<string>('Maharashtra');
+
+  // Pseudo-randomize mock data based on state string length for variety
+  const stateOffset = selectedState.length;
+
   const mockWeather: WeatherInfo = {
-    temp: 28,
-    feelsLike: 30,
-    humidity: 78,
-    rainProbability: 65,
-    windSpeed: 14,
-    condition: 'Partly Cloudy',
-    locationName: 'Satara District, Maharashtra',
-    advisory: 'Moderate rainfall predicted over the next 48 hours. Postpone foliar pesticide sprays until Friday.',
+    temp: 22 + (stateOffset % 15),
+    feelsLike: 24 + (stateOffset % 15),
+    humidity: 50 + (stateOffset * 2 % 40),
+    rainProbability: 20 + (stateOffset * 3 % 60),
+    windSpeed: 10 + (stateOffset % 10),
+    condition: stateOffset % 2 === 0 ? 'Partly Cloudy' : 'Sunny',
+    locationName: `${selectedState}, India`,
+    advisory: `Current agricultural advisory for ${selectedState}: Monitor soil moisture levels closely.`,
     forecast: [
-      { day: 'Today', temp: 28, condition: 'Partly Cloudy', rainProb: 65 },
-      { day: 'Wed', temp: 27, condition: 'Rainy', rainProb: 85 },
-      { day: 'Thu', temp: 29, condition: 'Rainy', rainProb: 70 },
-      { day: 'Fri', temp: 31, condition: 'Sunny', rainProb: 20 },
-      { day: 'Sat', temp: 32, condition: 'Sunny', rainProb: 10 },
-      { day: 'Sun', temp: 30, condition: 'Cloudy', rainProb: 40 },
-      { day: 'Mon', temp: 29, condition: 'Partly Cloudy', rainProb: 30 },
+      { day: 'Today', temp: 22 + (stateOffset % 15), condition: stateOffset % 2 === 0 ? 'Partly Cloudy' : 'Sunny', rainProb: 20 + (stateOffset * 3 % 60) },
+      { day: 'Wed', temp: 24 + (stateOffset % 12), condition: 'Rainy', rainProb: 85 },
+      { day: 'Thu', temp: 25 + (stateOffset % 10), condition: 'Sunny', rainProb: 10 },
+      { day: 'Fri', temp: 27 + (stateOffset % 8), condition: 'Sunny', rainProb: 5 },
+      { day: 'Sat', temp: 26 + (stateOffset % 11), condition: 'Cloudy', rainProb: 40 },
+      { day: 'Sun', temp: 25 + (stateOffset % 14), condition: 'Rainy', rainProb: 75 },
+      { day: 'Mon', temp: 23 + (stateOffset % 13), condition: 'Partly Cloudy', rainProb: 30 },
     ]
   };
 
@@ -64,7 +77,18 @@ export const WeatherWidget: React.FC = () => {
             <span className="text-xs font-mono text-[#38bdf8] group-hover:text-[#f97316] uppercase tracking-wider block mb-1 font-bold transition-colors">
               Hyper-Local Sky-Blue Climate Telemetry
             </span>
-            <h2 className="text-2xl font-extrabold text-white">{mockWeather.locationName}</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <h2 className="text-2xl font-extrabold text-white">{mockWeather.locationName}</h2>
+              <select 
+                value={selectedState} 
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="bg-[#0c1a2a] text-white text-sm px-3 py-1.5 border border-[#38bdf8]/30 hover:border-[#38bdf8] focus:border-[#38bdf8] rounded-md outline-none cursor-pointer transition-colors shadow-inner"
+              >
+                {INDIAN_STATES.map(state => (
+                  <option key={state} value={state}>{state}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="px-3.5 py-1.5 rounded-full bg-[#0284c7]/20 group-hover:bg-[#ea580c]/25 text-[#38bdf8] group-hover:text-[#fb923c] border border-[#0284c7]/40 group-hover:border-[#ea580c]/50 text-xs font-mono font-bold flex items-center gap-2 transition-all">

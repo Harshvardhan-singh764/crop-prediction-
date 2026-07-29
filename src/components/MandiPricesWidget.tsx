@@ -1,97 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, TrendingUp, TrendingDown, Minus, Store } from 'lucide-react';
 import { MandiPriceItem } from '../types';
+import { CROPS_DATASET } from '../data/crops';
+
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+];
 
 export const MandiPricesWidget: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedState, setSelectedState] = useState('All');
 
-  const mockMandiPrices: MandiPriceItem[] = [
-    {
-      id: '1',
-      commodity: 'Cotton (Kapas)',
-      hindiName: 'कपास',
-      market: 'Rajkot Mandi',
-      district: 'Rajkot',
-      state: 'Gujarat',
-      minPrice: 6800,
-      maxPrice: 7500,
-      modalPrice: 7200,
-      trend: 'up',
-      changePercentage: 4.2,
-      updatedAt: 'Today 10:30 AM'
-    },
-    {
-      id: '2',
-      commodity: 'Chickpea (Chana)',
-      hindiName: 'चना',
-      market: 'Latur APMC',
-      district: 'Latur',
-      state: 'Maharashtra',
-      minPrice: 5100,
-      maxPrice: 5600,
-      modalPrice: 5450,
-      trend: 'up',
-      changePercentage: 2.1,
-      updatedAt: 'Today 11:15 AM'
-    },
-    {
-      id: '3',
-      commodity: 'Paddy (Dhan - Common)',
-      hindiName: 'धान',
-      market: 'Karnal Grain Market',
-      district: 'Karnal',
-      state: 'Haryana',
-      minPrice: 2100,
-      maxPrice: 2450,
-      modalPrice: 2300,
-      trend: 'stable',
-      changePercentage: 0.0,
-      updatedAt: 'Today 09:45 AM'
-    },
-    {
-      id: '4',
-      commodity: 'Maize (Yellow Corn)',
-      hindiName: 'मक्का',
-      market: 'Davangere Mandi',
-      district: 'Davangere',
-      state: 'Karnataka',
-      minPrice: 1950,
-      maxPrice: 2250,
-      modalPrice: 2150,
-      trend: 'down',
-      changePercentage: -1.5,
-      updatedAt: 'Today 12:00 PM'
-    },
-    {
-      id: '5',
-      commodity: 'Wheat (Sharbati)',
-      hindiName: 'गेहूं',
-      market: 'Indore APMC',
-      district: 'Indore',
-      state: 'Madhya Pradesh',
-      minPrice: 2300,
-      maxPrice: 2600,
-      modalPrice: 2450,
-      trend: 'up',
-      changePercentage: 1.8,
-      updatedAt: 'Today 10:00 AM'
-    },
-    {
-      id: '6',
-      commodity: 'Pomegranate (Anar)',
-      hindiName: 'अनार',
-      market: 'Solapur APMC',
-      district: 'Solapur',
-      state: 'Maharashtra',
-      minPrice: 7500,
-      maxPrice: 9500,
-      modalPrice: 8500,
-      trend: 'up',
-      changePercentage: 5.4,
-      updatedAt: 'Today 08:30 AM'
-    }
-  ];
+  const mockMandiPrices: MandiPriceItem[] = useMemo(() => {
+    return CROPS_DATASET.map((crop, index) => {
+      // Generate some deterministic random-looking data based on index
+      const stateIndex = (index * 7) % INDIAN_STATES.length;
+      const basePrice = crop.avgMarketPricePerQuintal || (1500 + (index * 100) % 5000);
+      const isUp = index % 3 !== 0;
+      const trendStr = index % 5 === 0 ? 'stable' : isUp ? 'up' : 'down';
+      const change = (index % 10) / 2 + 0.5;
+      
+      return {
+        id: crop.id || String(index),
+        commodity: crop.name,
+        hindiName: crop.hindiName || '',
+        market: `${INDIAN_STATES[stateIndex]} Main APMC`,
+        district: `${INDIAN_STATES[stateIndex]} District`,
+        state: INDIAN_STATES[stateIndex],
+        minPrice: Math.floor(basePrice * 0.9),
+        maxPrice: Math.floor(basePrice * 1.1),
+        modalPrice: basePrice,
+        trend: trendStr as 'up' | 'down' | 'stable',
+        changePercentage: trendStr === 'stable' ? 0.0 : isUp ? change : -change,
+        updatedAt: 'Today 10:30 AM'
+      };
+    });
+  }, []);
 
   const filteredPrices = mockMandiPrices.filter(item => {
     const matchesSearch = item.commodity.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -135,11 +83,9 @@ export const MandiPricesWidget: React.FC = () => {
             className="vercel-input rounded-xl px-3 py-2 text-xs font-mono"
           >
             <option value="All" className="bg-[#0a0a0a]">All States</option>
-            <option value="Maharashtra" className="bg-[#0a0a0a]">Maharashtra</option>
-            <option value="Gujarat" className="bg-[#0a0a0a]">Gujarat</option>
-            <option value="Haryana" className="bg-[#0a0a0a]">Haryana</option>
-            <option value="Karnataka" className="bg-[#0a0a0a]">Karnataka</option>
-            <option value="Madhya Pradesh" className="bg-[#0a0a0a]">Madhya Pradesh</option>
+            {INDIAN_STATES.map(state => (
+              <option key={state} value={state} className="bg-[#0a0a0a]">{state}</option>
+            ))}
           </select>
         </div>
       </div>

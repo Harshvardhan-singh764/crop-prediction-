@@ -89,7 +89,7 @@ export const RecommendationForm: React.FC<FormProps> = ({
   };
 
   return (
-    <div className="vercel-card p-6 lg:p-10 max-w-4xl mx-auto shadow-2xl relative overflow-hidden">
+    <div className="vercel-card p-6 lg:p-10 w-full min-h-[calc(100vh-200px)] mx-auto shadow-2xl relative overflow-hidden">
       
       {/* Natural Greenish Yellow Mesh Backdrop */}
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[650px] h-[320px] bg-gradient-to-r from-[#a3e635]/25 via-[#facc15]/20 to-[#4ade80]/20 blur-[110px] pointer-events-none rounded-full" />
